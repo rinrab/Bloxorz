@@ -16,6 +16,7 @@ namespace Bloxorz
             VertexPositionColorNormal create(Vector3 vecPos, Vector3 normal)
             {
                 normal *= size;
+                normal = Vector3.Transform(normal, matrix);
                 normal.Normalize();
                 return new VertexPositionColorNormal(Vector3.Transform(vecPos * size + pos, matrix), color, normal);
             }
