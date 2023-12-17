@@ -41,6 +41,9 @@ namespace Bloxorz
             else
             {
                 Position.Y -= 4;
+                Position += delta * 1;
+                Rotation.Z -= delta.X.Normalize() * 4;
+                Rotation.X += delta.Z.Normalize() * 4;
             }
         }
 
