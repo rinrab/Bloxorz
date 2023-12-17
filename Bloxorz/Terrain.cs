@@ -47,7 +47,7 @@ namespace Bloxorz
 
         public Cell GetCell(int x, int y)
         {
-            if (x < 0 || y < 0 || x > Width || y > Height)
+            if (x < 0 || y < 0 || x >= Width || y >= Height)
             {
                 return new Cell(CellType.None);
             }
