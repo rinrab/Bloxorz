@@ -32,7 +32,7 @@ namespace Bloxorz
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             currentLevel = LevelData.Levels[0];
-            player = new Player();
+            player = new Player(currentLevel);
         }
 
         protected override void Initialize()
@@ -62,6 +62,8 @@ namespace Bloxorz
                 player.Direction = Direction.Up;
             else if (state.IsKeyDown(Keys.Down))
                 player.Direction = Direction.Down;
+            else if (state.IsKeyDown(Keys.R))
+                player = new Player(currentLevel);
             else
                 player.Direction = null;
 
