@@ -22,19 +22,19 @@ namespace Bloxorz
                 {
                     if (State == State.Stand)
                     {
-                        delta = new Vector3(Direction.DeltaX() * 3, -1, Direction.DeltaY() * 3);
+                        delta = new Vector3(Direction.DeltaX() * 1.5f, -0.5f, Direction.DeltaY() * 1.5f);
 
                         State = (Direction.GetAxis() == Axis.Horizontal) ? State.Horizontal : State.Vertical;
                     }
                     else if ((State == State.Horizontal && Direction.GetAxis() == Axis.Horizontal) ||
                              (State == State.Vertical && Direction.GetAxis() == Axis.Vertical))
                     {
-                        delta = new Vector3(Direction.DeltaX() * 3, 1, Direction.DeltaY() * 3);
+                        delta = new Vector3(Direction.DeltaX() * 1.5f, 0.5f, Direction.DeltaY() * 1.5f);
                         State = State.Stand;
                     }
                     else
                     {
-                        delta = new Vector3(Direction.DeltaX() * 2, 0, Direction.DeltaY() * 2);
+                        delta = new Vector3(Direction.DeltaX() * 1, 0, Direction.DeltaY() * 1);
                     }
 
                     animation = 0;
@@ -46,7 +46,7 @@ namespace Bloxorz
                 const float speed = 2;
                 if (animation * speed < 16)
                 {
-                    Position += delta;
+                    Position += delta * speed;
 
                     Rotation.Z = (Rotation.Z - GetSign(delta.X) * speed) % ((State == State.Vertical) ? 16 : 32);
                     Rotation.X = (Rotation.X + GetSign(delta.Z) * speed) % ((State == State.Horizontal) ? 16 : 32);
