@@ -94,7 +94,7 @@ namespace Bloxorz
             return rv;
         }
 
-        public static VertexBuffer GenerateLevel(GraphicsDevice graphicsDevice, Level level)
+        public static VertexBuffer GenerateLevel(GraphicsDevice graphicsDevice, Terrain level)
         {
             List<VertexPositionNormalTexture> vertices = new List<VertexPositionNormalTexture>();
 
@@ -102,9 +102,7 @@ namespace Bloxorz
             {
                 for (int x = 0; x < level.Width; x++)
                 {
-                    int i = y * level.Width + x;
-
-                    if (level.Data[i] == '#')
+                    if (level.GetCell(x, y).Type == CellType.Brick)
                     {
                         vertices.AddRange(GenerateCube(new Vector3(x * BlockSize, -BlockSize / 4, y * BlockSize),
                                                        new Vector3(BlockSize, BlockSize / 4, BlockSize),
@@ -127,7 +125,7 @@ namespace Bloxorz
             var vertices = GenerateCube(player.Position,
                                         new Vector3(1, 2, 1) * BlockSize,
                                         player.Rotation / 16 * MathF.PI / 2,
-                                        player.State == State.Vertical,
+                                        player.State == PlayerState.Vertical,
                                         TextureType.Player);
 
             VertexBuffer vertexBuffer = new VertexBuffer(graphicsDevice,

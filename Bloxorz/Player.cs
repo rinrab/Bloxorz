@@ -10,32 +10,37 @@ namespace Bloxorz
         public Vector3 Position = Vector3.Zero;
         public Vector3 Rotation = Vector3.Zero;
         public Direction? Direction;
-        public State State = State.Stand;
+        public PlayerState State = PlayerState.Stand;
 
         private Vector3 delta = Vector3.Zero;
         private int animation = 0;
         private bool isAlive = true;
-        private readonly Level level;
+        private readonly Terrain terrain;
         private readonly float speed = 2;
 
-        public Player(Level level)
+        public Player(Terrain terrain)
         {
-            this.level = level;
+            this.terrain = terrain;
         }
 
         public void Update()
         {
-            if (isAlive)
+            if (terrain.State == GameState.Playing)
             {
                 Move();
 
                 if (animation == -1)
                 {
-                    CellType[] cells = GetCells();
+                    var cells = GetCells();
 
-                    if (cells.Contains(CellType.None))
+                    if (cells[0].Type == CellType.None || (State != PlayerState.Stand && cells[1].Type == CellType.None))
                     {
-                        isAlive = false;
+                        terrain.State = GameState.GameOver;
+                    }
+                    else if (State == PlayerState.Stand && cells[0].Type == CellType.Exit)
+                    {
+                        terrain.State = GameState.Win;
+                        delta = new Vector3(0, -1, 0);
                     }
                 }
             }
@@ -54,17 +59,17 @@ namespace Bloxorz
             {
                 if (Direction.HasValue)
                 {
-                    if (State == State.Stand)
+                    if (State == PlayerState.Stand)
                     {
                         delta = new Vector3(Direction.DeltaX() * 1.5f, -0.5f, Direction.DeltaY() * 1.5f);
 
-                        State = (Direction.GetAxis() == Axis.Horizontal) ? State.Horizontal : State.Vertical;
+                        State = (Direction.GetAxis() == Axis.Horizontal) ? PlayerState.Horizontal : PlayerState.Vertical;
                     }
-                    else if ((State == State.Horizontal && Direction.GetAxis() == Axis.Horizontal) ||
-                             (State == State.Vertical && Direction.GetAxis() == Axis.Vertical))
+                    else if ((State == PlayerState.Horizontal && Direction.GetAxis() == Axis.Horizontal) ||
+                             (State == PlayerState.Vertical && Direction.GetAxis() == Axis.Vertical))
                     {
                         delta = new Vector3(Direction.DeltaX() * 1.5f, 0.5f, Direction.DeltaY() * 1.5f);
-                        State = State.Stand;
+                        State = PlayerState.Stand;
                     }
                     else
                     {
@@ -81,8 +86,8 @@ namespace Bloxorz
                 {
                     Position += delta * speed;
 
-                    Rotation.Z = (Rotation.Z - delta.X.Normalize() * speed) % ((State == State.Vertical) ? 16 : 32);
-                    Rotation.X = (Rotation.X + delta.Z.Normalize() * speed) % ((State == State.Horizontal) ? 16 : 32);
+                    Rotation.Z = (Rotation.Z - delta.X.Normalize() * speed) % ((State == PlayerState.Vertical) ? 16 : 32);
+                    Rotation.X = (Rotation.X + delta.Z.Normalize() * speed) % ((State == PlayerState.Horizontal) ? 16 : 32);
 
                     animation++;
                 }
@@ -93,34 +98,34 @@ namespace Bloxorz
             }
         }
 
-        private CellType[] GetCells()
+        private Cell[] GetCells()
         {
             Point pos = new Point((int)Position.X, (int)Position.Z);
 
-            if (State == State.Horizontal)
+            if (State == PlayerState.Horizontal)
             {
                 return [
-                    level.GetCell((pos.X - 8) / 16, pos.Y / 16),
-                    level.GetCell((pos.X - 8) / 16 + 1, pos.Y / 16)
+                    terrain.GetCell((pos.X - 8) / 16, pos.Y / 16),
+                    terrain.GetCell((pos.X - 8) / 16 + 1, pos.Y / 16)
                 ];
             }
-            else if (State == State.Vertical)
+            else if (State == PlayerState.Vertical)
             {
                 return [
-                    level.GetCell(pos.X / 16, (pos.Y - 8) / 16),
-                    level.GetCell(pos.X / 16, (pos.Y - 8) / 16 + 1),
+                    terrain.GetCell(pos.X / 16, (pos.Y - 8) / 16),
+                    terrain.GetCell(pos.X / 16, (pos.Y - 8) / 16 + 1),
                 ];
             }
             else
             {
                 return [
-                    level.GetCell(pos.X / 16, pos.Y / 16)
+                    terrain.GetCell(pos.X / 16, pos.Y / 16)
                 ];
             }
         }
     }
 
-    public enum State
+    public enum PlayerState
     {
         Stand,
         Vertical,

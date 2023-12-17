@@ -18,9 +18,8 @@ namespace Bloxorz
 
         const float BlockSize = 16;
 
-        private Player player;
-
-        private Level currentLevel;
+        private Terrain terrain;
+        private int level;
 
         public Game1()
         {
@@ -33,8 +32,6 @@ namespace Bloxorz
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            currentLevel = LevelData.Levels[0];
-            player = new Player(currentLevel);
         }
 
         protected override void Initialize()
@@ -52,9 +49,17 @@ namespace Bloxorz
 
             graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
-            levelVertexBuffer = ObjectGenerator.GenerateLevel(GraphicsDevice, currentLevel);
+            NewGame();
 
             base.Initialize();
+        }
+
+        private void NewGame()
+        {
+            terrain = new Terrain(LevelData.Levels[level]);
+
+            levelVertexBuffer?.Dispose();
+            levelVertexBuffer = ObjectGenerator.GenerateLevel(GraphicsDevice, terrain);
         }
 
         protected override void Update(GameTime gameTime)
@@ -62,21 +67,34 @@ namespace Bloxorz
             var state = Keyboard.GetState();
 
             if (state.IsKeyDown(Keys.Left))
-                player.Direction = Direction.Left;
+                terrain.Player.Direction = Direction.Left;
             else if (state.IsKeyDown(Keys.Right))
-                player.Direction = Direction.Right;
+                terrain.Player.Direction = Direction.Right;
             else if (state.IsKeyDown(Keys.Up))
-                player.Direction = Direction.Up;
+                terrain.Player.Direction = Direction.Up;
             else if (state.IsKeyDown(Keys.Down))
-                player.Direction = Direction.Down;
+                terrain.Player.Direction = Direction.Down;
             else if (state.IsKeyDown(Keys.R))
-                player = new Player(currentLevel);
+                NewGame();
             else if (state.IsKeyDown(Keys.Escape))
                 Exit();
             else
-                player.Direction = null;
+                terrain.Player.Direction = null;
 
-            player.Update();
+            terrain.Update();
+
+            if (terrain.EndTimer > 30)
+            {
+                if (terrain.State == GameState.GameOver)
+                {
+                    NewGame();
+                }
+                else if (terrain.State == GameState.Win)
+                {
+                    level++;
+                    NewGame();
+                }
+            }
 
             camRotation = new Vector3(20, 10, 0) * (float)Math.PI / 180f;
             camPosition = new Vector3(0.1f, -0.3f, 1) * 300;
@@ -107,7 +125,7 @@ namespace Bloxorz
                 GraphicsDevice.SetVertexBuffer(levelVertexBuffer);
                 GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, levelVertexBuffer.VertexCount);
 
-                using (VertexBuffer playerVertexBuffer = ObjectGenerator.GeneratePlayer(GraphicsDevice, player))
+                using (VertexBuffer playerVertexBuffer = ObjectGenerator.GeneratePlayer(GraphicsDevice, terrain.Player))
                 {
                     GraphicsDevice.SetVertexBuffer(playerVertexBuffer);
                     GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, playerVertexBuffer.VertexCount);
