@@ -11,17 +11,23 @@ namespace Bloxorz
     {
         public const float BlockSize = 16f;
 
-        public static VertexPositionColorNormal[] GenerateCube(Vector3 pos, Matrix matrix, Vector3 size, Color color)
+        public static VertexPositionColorNormal[] GenerateCube(Vector3 pos, Vector3 size, Vector3 rotation, bool reverseRotation, Color color)
         {
+            var matrix =
+                Matrix.CreateScale(size) *
+                Matrix.CreateTranslation(-size / 2) *
+                    (reverseRotation ?
+                    Matrix.CreateRotationX(rotation.X) * Matrix.CreateRotationZ(rotation.Z) :
+                    Matrix.CreateRotationZ(rotation.Z) * Matrix.CreateRotationX(rotation.X)) *
+                Matrix.CreateTranslation(size / 2) *
+                Matrix.CreateTranslation(pos);
+
             VertexPositionColorNormal create(Vector3 vecPos, Vector3 normal)
             {
-                normal *= size;
-                normal = Vector3.Transform(normal, matrix);
-                normal.Normalize();
-                return new VertexPositionColorNormal(Vector3.Transform(vecPos * size + pos, matrix), color, normal);
+                return new VertexPositionColorNormal(Vector3.Transform(vecPos, matrix), color, Vector3.Zero);
             }
 
-            return [
+            VertexPositionColorNormal[] rv = [
                 create(new Vector3(0, 0, 0), new Vector3(0, -1, 0)),
                 create(new Vector3(1, 0, 0), new Vector3(0, -1, 0)),
                 create(new Vector3(1, 0, 1), new Vector3(0, -1, 0)),
@@ -29,18 +35,18 @@ namespace Bloxorz
                 create(new Vector3(0, 0, 1), new Vector3(0, -1, 0)),
                 create(new Vector3(0, 0, 0), new Vector3(0, -1, 0)),
 
-                create(new Vector3(0, 1, 0), new Vector3(0, 1, 0)),
                 create(new Vector3(1, 1, 0), new Vector3(0, 1, 0)),
-                create(new Vector3(1, 1, 1), new Vector3(0, 1, 0)),
+                create(new Vector3(0, 1, 0), new Vector3(0, 1, 0)),
                 create(new Vector3(1, 1, 1), new Vector3(0, 1, 0)),
                 create(new Vector3(0, 1, 1), new Vector3(0, 1, 0)),
+                create(new Vector3(1, 1, 1), new Vector3(0, 1, 0)),
                 create(new Vector3(0, 1, 0), new Vector3(0, 1, 0)),
 
-                create(new Vector3(0, 0, 0), new Vector3(0, 0, -1)),
                 create(new Vector3(1, 0, 0), new Vector3(0, 0, -1)),
-                create(new Vector3(1, 1, 0), new Vector3(0, 0, -1)),
+                create(new Vector3(0, 0, 0), new Vector3(0, 0, -1)),
                 create(new Vector3(1, 1, 0), new Vector3(0, 0, -1)),
                 create(new Vector3(0, 1, 0), new Vector3(0, 0, -1)),
+                create(new Vector3(1, 1, 0), new Vector3(0, 0, -1)),
                 create(new Vector3(0, 0, 0), new Vector3(0, 0, -1)),
 
                 create(new Vector3(0, 0, 1), new Vector3(0, 0, 1)),
@@ -50,11 +56,11 @@ namespace Bloxorz
                 create(new Vector3(0, 1, 1), new Vector3(0, 0, 1)),
                 create(new Vector3(0, 0, 1), new Vector3(0, 0, 1)),
 
-                create(new Vector3(0, 0, 0), new Vector3(-1, 0, 1)),
                 create(new Vector3(0, 1, 0), new Vector3(-1, 0, 1)),
-                create(new Vector3(0, 1, 1), new Vector3(-1, 0, 1)),
+                create(new Vector3(0, 0, 0), new Vector3(-1, 0, 1)),
                 create(new Vector3(0, 1, 1), new Vector3(-1, 0, 1)),
                 create(new Vector3(0, 0, 1), new Vector3(-1, 0, 1)),
+                create(new Vector3(0, 1, 1), new Vector3(-1, 0, 1)),
                 create(new Vector3(0, 0, 0), new Vector3(-1, 0, 1)),
 
                 create(new Vector3(1, 0, 0), new Vector3(1, 0, 0)),
@@ -64,6 +70,17 @@ namespace Bloxorz
                 create(new Vector3(1, 0, 1), new Vector3(1, 0, 0)),
                 create(new Vector3(1, 0, 0), new Vector3(1, 0, 0)),
             ];
+
+            for (int i = 0; i < rv.Length; i += 3)
+            {
+                Vector3 dir = Vector3.Cross(rv[i + 1].Position - rv[i + 0].Position, rv[i + 2].Position - rv[i + 0].Position);
+                Vector3 norm = Vector3.Normalize(dir);
+                rv[i + 0].Normal = norm;
+                rv[i + 1].Normal = norm;
+                rv[i + 2].Normal = norm;
+            }
+
+            return rv;
         }
 
         public static VertexBuffer GenerateLevel(GraphicsDevice graphicsDevice, Level level)
@@ -78,10 +95,9 @@ namespace Bloxorz
 
                     if (level.Data[i] == '#')
                     {
-                        vertices.AddRange(GenerateCube(new Vector3(x, 0, y) * BlockSize,
-                                                       Matrix.CreateTranslation(Vector3.Zero),
-                                                       new Vector3(BlockSize, -BlockSize / 4, BlockSize),
-                                                       Color.Blue));
+                        vertices.AddRange(GenerateCube(new Vector3(x * BlockSize, -BlockSize / 4, y * BlockSize),
+                                                       new Vector3(BlockSize, BlockSize / 4, BlockSize),
+                                                       Vector3.Zero, false, Color.Blue));
                     }
                 }
             }
@@ -97,27 +113,10 @@ namespace Bloxorz
 
         public static VertexBuffer GeneratePlayer(GraphicsDevice graphicsDevice, Player player)
         {
-            var rot = player.Rotation / 16 * MathF.PI / 2;
-
-            Vector3 offset = new Vector3(-8, -16, -8);
-
-            Matrix matrix = Matrix.CreateScale(new Vector3(1, 2, 1) * BlockSize);
-            matrix *= Matrix.CreateTranslation(offset);
-            if (player.State == State.Vertical)
-            {
-                matrix *= Matrix.CreateRotationX(rot.X);
-                matrix *= Matrix.CreateRotationZ(rot.Z);
-            }
-            else
-            {
-                matrix *= Matrix.CreateRotationZ(rot.Z);
-                matrix *= Matrix.CreateRotationX(rot.X);
-            }
-            matrix *= Matrix.CreateTranslation(player.Position - offset);
-
-            var vertices = GenerateCube(Vector3.Zero,
-                                        matrix,
-                                        Vector3.One,
+            var vertices = GenerateCube(player.Position,
+                                        new Vector3(1, 2, 1) * BlockSize,
+                                        player.Rotation / 16 * MathF.PI / 2,
+                                        player.State == State.Vertical,
                                         new Color(0x3b, 0x2d, 0x2f));
 
             VertexBuffer vertexBuffer = new VertexBuffer(graphicsDevice,

@@ -88,7 +88,7 @@ namespace Bloxorz
 
             GraphicsDevice.RasterizerState = new RasterizerState
             {
-                CullMode = CullMode.None
+                CullMode = CullMode.CullClockwiseFace
             };
 
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)

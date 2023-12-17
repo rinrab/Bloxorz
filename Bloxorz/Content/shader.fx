@@ -27,7 +27,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     output.Position = mul(viewPosition, Projection);
     output.Color = input.Color * output.Position.z * 10;
     output.TextureCordinate = input.TexCoord;
-    output.Normal = mul(input.Normal, World);
+    output.Normal = input.Normal;
 
     output.Pos2 = worldPosition;
 
@@ -37,10 +37,15 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
     float4 light = normalize(float4(-1, 3, 1, 0));
+    //float4 light = float4(0, -1, 0, 0);
 
     float normalMul = dot(input.Normal, light);
 
-    return input.Color * (normalMul + 0.5);
+    return input.Color * (normalMul * 2 + 0);
+
+    //return normalize(-input.Normal);
+
+    //return float4(0.5, 0, 0, 0);
 }
 
 technique Ambient
