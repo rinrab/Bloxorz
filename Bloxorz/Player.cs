@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Timofei Zhakov. All rights reserved.
 
 using Microsoft.Xna.Framework;
+using System.Linq;
 
 namespace Bloxorz
 {
@@ -32,11 +33,11 @@ namespace Bloxorz
                 {
                     PlayerCells cells = GetCells();
 
-                    if (cells.ContainsVoid())
+                    if (cells.Cells.Any(cell => cell.Type == CellType.None || (cell.Type == CellType.Bridge && !cell.IsOpen)))
                     {
                         terrain.State = GameState.GameOver;
                     }
-                    else if (cells.Contains(CellType.Exit) && State == PlayerState.Stand)
+                    else if (cells.Cells.Any(cell => cell.Type == CellType.Exit) && State == PlayerState.Stand)
                     {
                         terrain.State = GameState.Win;
                         delta = new Vector3(0, -1, 0);

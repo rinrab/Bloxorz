@@ -123,16 +123,6 @@ namespace Bloxorz
                 Cells = [cell1, cell2];
             }
         }
-
-        public bool Contains(CellType type)
-        {
-            return Cell1?.Type == type || Cell2?.Type == type;
-        }
-
-        public bool ContainsVoid()
-        {
-            return Cells.Any(cell => cell.Type == CellType.None || (cell.Type == CellType.Bridge && !cell.IsOpen));
-        }
     }
 
     public class Cell
