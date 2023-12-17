@@ -37,7 +37,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
     float4 light = normalize(float4(-1, 3, 1, 0));
-    
+
     float normalMul = dot(input.Normal, light);
 
     return input.Color * (normalMul + 0.5);
