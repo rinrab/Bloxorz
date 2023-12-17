@@ -26,9 +26,11 @@ namespace Bloxorz
         {
             graphics = new GraphicsDeviceManager(this)
             {
-                PreferredBackBufferWidth = 1280,
-                PreferredBackBufferHeight = 720
+                PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width,
+                PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height,
+                IsFullScreen = true,
             };
+
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             currentLevel = LevelData.Levels[0];
@@ -64,6 +66,8 @@ namespace Bloxorz
                 player.Direction = Direction.Down;
             else if (state.IsKeyDown(Keys.R))
                 player = new Player(currentLevel);
+            else if (state.IsKeyDown(Keys.Escape))
+                Exit();
             else
                 player.Direction = null;
 
