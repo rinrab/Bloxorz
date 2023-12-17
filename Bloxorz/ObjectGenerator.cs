@@ -11,7 +11,13 @@ namespace Bloxorz
     {
         public const float BlockSize = 16f;
 
-        public static VertexPositionColorNormal[] GenerateCube(Vector3 pos, Vector3 size, Vector3 rotation, bool reverseRotation, Color color)
+        public enum TextureType
+        {
+            Player,
+            Level,
+        }
+
+        public static VertexPositionNormalTexture[] GenerateCube(Vector3 pos, Vector3 size, Vector3 rotation, bool reverseRotation, TextureType textureType)
         {
             var matrix =
                 Matrix.CreateScale(size) *
@@ -22,53 +28,58 @@ namespace Bloxorz
                 Matrix.CreateTranslation(size / 2) *
                 Matrix.CreateTranslation(pos);
 
-            VertexPositionColorNormal create(Vector3 vecPos, Vector3 normal)
+            VertexPositionNormalTexture create(Vector3 vecPos, Vector3 normal, Vector2 texCoord)
             {
-                return new VertexPositionColorNormal(Vector3.Transform(vecPos, matrix), color, Vector3.Zero);
+                if (textureType == TextureType.Level)
+                {
+                    texCoord.Y++;
+                }
+
+                return new VertexPositionNormalTexture(Vector3.Transform(vecPos, matrix), Vector3.Zero, texCoord);
             }
 
-            VertexPositionColorNormal[] rv = [
-                create(new Vector3(0, 0, 0), new Vector3(0, -1, 0)),
-                create(new Vector3(1, 0, 0), new Vector3(0, -1, 0)),
-                create(new Vector3(1, 0, 1), new Vector3(0, -1, 0)),
-                create(new Vector3(1, 0, 1), new Vector3(0, -1, 0)),
-                create(new Vector3(0, 0, 1), new Vector3(0, -1, 0)),
-                create(new Vector3(0, 0, 0), new Vector3(0, -1, 0)),
+            VertexPositionNormalTexture[] rv = [
+                create(new Vector3(0, 0, 0), new Vector3(0, -1, 0), new Vector2(0, 0)),
+                create(new Vector3(1, 0, 0), new Vector3(0, -1, 0), new Vector2(1, 0)),
+                create(new Vector3(1, 0, 1), new Vector3(0, -1, 0), new Vector2(1, 1)),
+                create(new Vector3(1, 0, 1), new Vector3(0, -1, 0), new Vector2(1, 1)),
+                create(new Vector3(0, 0, 1), new Vector3(0, -1, 0), new Vector2(0, 1)),
+                create(new Vector3(0, 0, 0), new Vector3(0, -1, 0), new Vector2(0, 0)),
 
-                create(new Vector3(1, 1, 0), new Vector3(0, 1, 0)),
-                create(new Vector3(0, 1, 0), new Vector3(0, 1, 0)),
-                create(new Vector3(1, 1, 1), new Vector3(0, 1, 0)),
-                create(new Vector3(0, 1, 1), new Vector3(0, 1, 0)),
-                create(new Vector3(1, 1, 1), new Vector3(0, 1, 0)),
-                create(new Vector3(0, 1, 0), new Vector3(0, 1, 0)),
+                create(new Vector3(1, 1, 0), new Vector3(0, 1, 0), new Vector2(1, 0)),
+                create(new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector2(0, 0)),
+                create(new Vector3(1, 1, 1), new Vector3(0, 1, 0), new Vector2(1, 1)),
+                create(new Vector3(0, 1, 1), new Vector3(0, 1, 0), new Vector2(0, 1)),
+                create(new Vector3(1, 1, 1), new Vector3(0, 1, 0), new Vector2(1, 1)),
+                create(new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector2(0, 0)),
 
-                create(new Vector3(1, 0, 0), new Vector3(0, 0, -1)),
-                create(new Vector3(0, 0, 0), new Vector3(0, 0, -1)),
-                create(new Vector3(1, 1, 0), new Vector3(0, 0, -1)),
-                create(new Vector3(0, 1, 0), new Vector3(0, 0, -1)),
-                create(new Vector3(1, 1, 0), new Vector3(0, 0, -1)),
-                create(new Vector3(0, 0, 0), new Vector3(0, 0, -1)),
+                create(new Vector3(1, 0, 0), new Vector3(0, 0, -1), new Vector2(1, 0)),
+                create(new Vector3(0, 0, 0), new Vector3(0, 0, -1), new Vector2(0, 0)),
+                create(new Vector3(1, 1, 0), new Vector3(0, 0, -1), new Vector2(1, 1)),
+                create(new Vector3(0, 1, 0), new Vector3(0, 0, -1), new Vector2(0, 1)),
+                create(new Vector3(1, 1, 0), new Vector3(0, 0, -1), new Vector2(1, 1)),
+                create(new Vector3(0, 0, 0), new Vector3(0, 0, -1), new Vector2(0, 0)),
 
-                create(new Vector3(0, 0, 1), new Vector3(0, 0, 1)),
-                create(new Vector3(1, 0, 1), new Vector3(0, 0, 1)),
-                create(new Vector3(1, 1, 1), new Vector3(0, 0, 1)),
-                create(new Vector3(1, 1, 1), new Vector3(0, 0, 1)),
-                create(new Vector3(0, 1, 1), new Vector3(0, 0, 1)),
-                create(new Vector3(0, 0, 1), new Vector3(0, 0, 1)),
+                create(new Vector3(0, 0, 1), new Vector3(0, 0, 1), new Vector2(0, 0)),
+                create(new Vector3(1, 0, 1), new Vector3(0, 0, 1), new Vector2(1, 0)),
+                create(new Vector3(1, 1, 1), new Vector3(0, 0, 1), new Vector2(1, 1)),
+                create(new Vector3(1, 1, 1), new Vector3(0, 0, 1), new Vector2(1, 1)),
+                create(new Vector3(0, 1, 1), new Vector3(0, 0, 1), new Vector2(0, 1)),
+                create(new Vector3(0, 0, 1), new Vector3(0, 0, 1), new Vector2(0, 0)),
 
-                create(new Vector3(0, 1, 0), new Vector3(-1, 0, 1)),
-                create(new Vector3(0, 0, 0), new Vector3(-1, 0, 1)),
-                create(new Vector3(0, 1, 1), new Vector3(-1, 0, 1)),
-                create(new Vector3(0, 0, 1), new Vector3(-1, 0, 1)),
-                create(new Vector3(0, 1, 1), new Vector3(-1, 0, 1)),
-                create(new Vector3(0, 0, 0), new Vector3(-1, 0, 1)),
+                create(new Vector3(0, 1, 0), new Vector3(-1, 0, 1), new Vector2(1, 0)),
+                create(new Vector3(0, 0, 0), new Vector3(-1, 0, 1), new Vector2(0, 0)),
+                create(new Vector3(0, 1, 1), new Vector3(-1, 0, 1), new Vector2(1, 1)),
+                create(new Vector3(0, 0, 1), new Vector3(-1, 0, 1), new Vector2(0, 1)),
+                create(new Vector3(0, 1, 1), new Vector3(-1, 0, 1), new Vector2(1, 1)),
+                create(new Vector3(0, 0, 0), new Vector3(-1, 0, 1), new Vector2(0, 0)),
 
-                create(new Vector3(1, 0, 0), new Vector3(1, 0, 0)),
-                create(new Vector3(1, 1, 0), new Vector3(1, 0, 0)),
-                create(new Vector3(1, 1, 1), new Vector3(1, 0, 0)),
-                create(new Vector3(1, 1, 1), new Vector3(1, 0, 0)),
-                create(new Vector3(1, 0, 1), new Vector3(1, 0, 0)),
-                create(new Vector3(1, 0, 0), new Vector3(1, 0, 0)),
+                create(new Vector3(1, 0, 0), new Vector3(1, 0, 0), new Vector2(0, 0)),
+                create(new Vector3(1, 1, 0), new Vector3(1, 0, 0), new Vector2(1, 0)),
+                create(new Vector3(1, 1, 1), new Vector3(1, 0, 0), new Vector2(1, 1)),
+                create(new Vector3(1, 1, 1), new Vector3(1, 0, 0), new Vector2(1, 1)),
+                create(new Vector3(1, 0, 1), new Vector3(1, 0, 0), new Vector2(0, 1)),
+                create(new Vector3(1, 0, 0), new Vector3(1, 0, 0), new Vector2(0, 0)),
             ];
 
             for (int i = 0; i < rv.Length; i += 3)
@@ -85,7 +96,7 @@ namespace Bloxorz
 
         public static VertexBuffer GenerateLevel(GraphicsDevice graphicsDevice, Level level)
         {
-            List<VertexPositionColorNormal> vertices = new List<VertexPositionColorNormal>();
+            List<VertexPositionNormalTexture> vertices = new List<VertexPositionNormalTexture>();
 
             for (int y = 0; y < level.Height; y++)
             {
@@ -97,13 +108,13 @@ namespace Bloxorz
                     {
                         vertices.AddRange(GenerateCube(new Vector3(x * BlockSize, -BlockSize / 4, y * BlockSize),
                                                        new Vector3(BlockSize, BlockSize / 4, BlockSize),
-                                                       Vector3.Zero, false, Color.Blue));
+                                                       Vector3.Zero, false, TextureType.Level));
                     }
                 }
             }
 
             VertexBuffer vertexBuffer = new VertexBuffer(graphicsDevice,
-                                                         typeof(VertexPositionColorNormal),
+                                                         typeof(VertexPositionNormalTexture),
                                                          vertices.Count,
                                                          BufferUsage.WriteOnly);
 
@@ -117,10 +128,10 @@ namespace Bloxorz
                                         new Vector3(1, 2, 1) * BlockSize,
                                         player.Rotation / 16 * MathF.PI / 2,
                                         player.State == State.Vertical,
-                                        new Color(0x3b, 0x2d, 0x2f));
+                                        TextureType.Player);
 
             VertexBuffer vertexBuffer = new VertexBuffer(graphicsDevice,
-                                                         typeof(VertexPositionColorNormal),
+                                                         typeof(VertexPositionNormalTexture),
                                                          vertices.Length,
                                                          BufferUsage.WriteOnly);
 

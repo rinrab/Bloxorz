@@ -47,6 +47,8 @@ namespace Bloxorz
             effect.Parameters["World"].SetValue(worldMatrix);
             effect.Parameters["Projection"].SetValue(projectionMatrix);
             effect.Parameters["Light"].SetValue(new Vector3(-2, 3, 1));
+            effect.Parameters["PlayerTexture"].SetValue(Content.Load<Texture2D>("Player"));
+            effect.Parameters["LevelTexture"].SetValue(Content.Load<Texture2D>("Level"));
 
             graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 

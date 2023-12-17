@@ -3,20 +3,30 @@ float4x4 View;
 float4x4 Projection;
 float3 Light;
 
+Texture2D PlayerTexture;
+sampler2D PlayerTextureSampler = sampler_state
+{
+    Texture = <PlayerTexture>;
+};
+
+Texture2D LevelTexture;
+sampler2D LevelTextureSampler = sampler_state
+{
+    Texture = <LevelTexture>;
+};
+
 struct VertexShaderInput
 {
     float4 TexCoord : TEXCOORD0;
     float4 Position : POSITION0;
     float4 Normal : NORMAL;
-    float4 Color : COLOR0;
 };
 
 struct VertexShaderOutput
 {
     float4 Position : POSITION0;
     float4 Normal : TEXCOORD2;
-    float4 Color : COLOR0;
-    float2 TextureCordinate : TEXCOORD0;
+    float2 TexCoord : TEXCOORD0;
     float4 Pos2 : TEXCOORD1;
 };
 
@@ -26,8 +36,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     float4 worldPosition = mul(input.Position, World);
     float4 viewPosition = mul(worldPosition, View);
     output.Position = mul(viewPosition, Projection);
-    output.Color = input.Color * output.Position.z * 10;
-    output.TextureCordinate = input.TexCoord;
+    output.TexCoord = input.TexCoord;
     output.Normal = input.Normal;
 
     output.Pos2 = worldPosition;
@@ -39,7 +48,18 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
     float normalMul = dot(input.Normal, normalize(float4(Light, 0)));
 
-    return input.Color * (normalMul * 2 + 0);
+    float4 color;
+    if (input.TexCoord.y < 1)
+    {
+        color = tex2D(PlayerTextureSampler, input.TexCoord);
+    }
+    else
+    {
+        float2 texCoord = float2(input.TexCoord.x, input.TexCoord.y - 1);
+        color = tex2D(LevelTextureSampler, texCoord);
+    }
+
+    return color * (normalMul * 1 + 0.2);
 }
 
 technique Ambient
