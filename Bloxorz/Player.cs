@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Timofei Zhakov. All rights reserved.
 
 using Microsoft.Xna.Framework;
+using System.Linq;
 
 namespace Bloxorz
 {
@@ -29,22 +30,9 @@ namespace Bloxorz
 
                 if (animation == -1)
                 {
-                    Point pos = new Point((int)Position.X, (int)Position.Z);
-                    Point cell1 = new Point(pos.X / 16, pos.Y / 16);
-                    Point cell2 = new Point(pos.X / 16, pos.Y / 16);
+                    CellType[] cells = GetCells();
 
-                    if (State == State.Horizontal)
-                    {
-                        cell1 = new Point((pos.X - 8) / 16, pos.Y / 16);
-                        cell2 = new Point((pos.X - 8) / 16 + 1, pos.Y / 16);
-                    }
-                    if (State == State.Vertical)
-                    {
-                        cell1 = new Point(pos.X / 16, (pos.Y - 8) / 16);
-                        cell2 = new Point(pos.X / 16, (pos.Y - 8) / 16 + 1);
-                    }
-
-                    if (level.GetCell(cell1) == CellType.None || level.GetCell(cell2) == CellType.None)
+                    if (cells.Contains(CellType.None))
                     {
                         isAlive = false;
                     }
@@ -99,6 +87,32 @@ namespace Bloxorz
                 {
                     animation = -1;
                 }
+            }
+        }
+
+        private CellType[] GetCells()
+        {
+            Point pos = new Point((int)Position.X, (int)Position.Z);
+
+            if (State == State.Horizontal)
+            {
+                return [
+                    level.GetCell((pos.X - 8) / 16, pos.Y / 16),
+                    level.GetCell((pos.X - 8) / 16 + 1, pos.Y / 16)
+                ];
+            }
+            else if (State == State.Vertical)
+            {
+                return [
+                    level.GetCell(pos.X / 16, (pos.Y - 8) / 16),
+                    level.GetCell(pos.X / 16, (pos.Y - 8) / 16 + 1),
+                ];
+            }
+            else
+            {
+                return [
+                    level.GetCell(pos.X / 16, pos.Y / 16)
+                ];
             }
         }
 

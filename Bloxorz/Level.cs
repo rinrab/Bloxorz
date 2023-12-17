@@ -12,14 +12,19 @@ namespace Bloxorz
 
         public CellType GetCell(Point point)
         {
-            if (point.X < 0 || point.Y < 0 ||
-                point.X > Width || point.Y > Height)
+            return GetCell(point.X, point.Y);
+        }
+
+        public CellType GetCell(int x, int y)
+        {
+            if (x < 0 || y < 0 ||
+                x > Width || y > Height)
             {
                 return CellType.None;
             }
             else
             {
-                char c = Data[point.Y * Width + point.X];
+                char c = Data[y * Width + x];
                 if (c == '#')
                 {
                     return CellType.Brick;
