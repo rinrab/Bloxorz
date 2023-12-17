@@ -16,6 +16,7 @@ namespace Bloxorz
         private int animation = 0;
         private bool isAlive = true;
         private readonly Level level;
+        private readonly float speed = 2;
 
         public Player(Level level)
         {
@@ -40,10 +41,10 @@ namespace Bloxorz
             }
             else
             {
-                Position.Y -= 4;
-                Position += delta * 1;
-                Rotation.Z -= delta.X.Normalize() * 4;
-                Rotation.X += delta.Z.Normalize() * 4;
+                Position.Y -= 2 * speed;
+                Position += delta * speed / 2;
+                Rotation.Z -= delta.X.Normalize() * 2 * speed;
+                Rotation.X += delta.Z.Normalize() * 2 * speed;
             }
         }
 
@@ -76,7 +77,6 @@ namespace Bloxorz
 
             if (animation != -1)
             {
-                const float speed = 2;
                 if (animation * speed < 16)
                 {
                     Position += delta * speed;
