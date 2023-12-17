@@ -4,7 +4,7 @@ namespace Bloxorz
 {
     public static class LevelData
     {
-        public static Level[] Levels = [
+        public static readonly Level[] Levels = [
             new Level()
             {
                 Width = 10,
