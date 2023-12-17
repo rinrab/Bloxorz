@@ -16,8 +16,6 @@ namespace Bloxorz
         private Matrix worldMatrix;
         private Effect effect;
 
-        private VertexBuffer levelVertexBuffer;
-
         const float BlockSize = 16;
 
         private Terrain terrain;
@@ -29,7 +27,7 @@ namespace Bloxorz
             {
                 PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width,
                 PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height,
-                IsFullScreen = true,
+                //IsFullScreen = true,
             };
 
             Content.RootDirectory = "Content";
@@ -48,6 +46,7 @@ namespace Bloxorz
             effect.Parameters["Light"].SetValue(new Vector3(-2, 3, 1));
             effect.Parameters["PlayerTexture"].SetValue(Content.Load<Texture2D>("Player"));
             effect.Parameters["LevelTexture"].SetValue(Content.Load<Texture2D>("Level"));
+            effect.Parameters["PlateTexture"].SetValue(Content.Load<Texture2D>("Plate"));
 
             graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
@@ -59,9 +58,6 @@ namespace Bloxorz
         private void NewGame()
         {
             terrain = new Terrain(LevelData.Levels[level]);
-
-            levelVertexBuffer?.Dispose();
-            levelVertexBuffer = ObjectGenerator.GenerateLevel(GraphicsDevice, terrain);
         }
 
         protected override void Update(GameTime gameTime)
@@ -99,7 +95,7 @@ namespace Bloxorz
             }
 
             camRotation = new Vector3(20, 10, 0) * (float)Math.PI / 180f;
-            camPosition = new Vector3(0.1f, -0.3f, 1) * 300;
+            camPosition = new Vector3(0.1f, -0.3f, 1) * terrain.Width * 30;
 
             base.Update(gameTime);
         }
@@ -124,8 +120,11 @@ namespace Bloxorz
             {
                 pass.Apply();
 
-                GraphicsDevice.SetVertexBuffer(levelVertexBuffer);
-                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, levelVertexBuffer.VertexCount);
+                using (VertexBuffer levelVertexBuffer = ObjectGenerator.GenerateLevel(GraphicsDevice, terrain))
+                {
+                    GraphicsDevice.SetVertexBuffer(levelVertexBuffer);
+                    GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, levelVertexBuffer.VertexCount);
+                }
 
                 using (VertexBuffer playerVertexBuffer = ObjectGenerator.GeneratePlayer(GraphicsDevice, terrain.Player))
                 {
@@ -135,12 +134,6 @@ namespace Bloxorz
             }
 
             base.Draw(gameTime);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            levelVertexBuffer.Dispose();
-            base.Dispose(disposing);
         }
     }
 }

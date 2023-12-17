@@ -15,6 +15,7 @@ namespace Bloxorz
         {
             Player,
             Level,
+            Plate
         }
 
         public static VertexPositionNormalTexture[] GenerateCube(Vector3 pos, Vector3 size, Vector3 rotation, bool reverseRotation, TextureType textureType)
@@ -25,6 +26,7 @@ namespace Bloxorz
                     (reverseRotation ?
                     Matrix.CreateRotationX(rotation.X) * Matrix.CreateRotationZ(rotation.Z) :
                     Matrix.CreateRotationZ(rotation.Z) * Matrix.CreateRotationX(rotation.X)) *
+                Matrix.CreateRotationY(rotation.Y) *
                 Matrix.CreateTranslation(size / 2) *
                 Matrix.CreateTranslation(pos);
 
@@ -33,6 +35,10 @@ namespace Bloxorz
                 if (textureType == TextureType.Level)
                 {
                     texCoord.Y++;
+                }
+                else if (textureType == TextureType.Plate)
+                {
+                    texCoord.Y += 2;
                 }
 
                 return new VertexPositionNormalTexture(Vector3.Transform(vecPos, matrix), Vector3.Zero, texCoord);
@@ -107,6 +113,35 @@ namespace Bloxorz
                         vertices.AddRange(GenerateCube(new Vector3(x * BlockSize, -BlockSize / 4, y * BlockSize),
                                                        new Vector3(BlockSize, BlockSize / 4, BlockSize),
                                                        Vector3.Zero, false, TextureType.Level));
+                    }
+                    else if (level.GetCell(x, y).Type == CellType.Button)
+                    {
+                        vertices.AddRange(GenerateCube(new Vector3(x * BlockSize, -BlockSize / 4, y * BlockSize),
+                                                       new Vector3(BlockSize, BlockSize / 4, BlockSize),
+                                                       Vector3.Zero, false, TextureType.Level));
+
+                        if (level.GetCell(x, y).StayRequiered)
+                        {
+                            vertices.AddRange(GenerateCube(new Vector3(x * 16 + 6, 0, y * 16),
+                                                           new Vector3(4, 2, 16),
+                                                           new Vector3(0, MathF.PI / 4, 0), false, TextureType.Plate));
+
+                            vertices.AddRange(GenerateCube(new Vector3(x * 16 + 6, 0, y * 16),
+                                                           new Vector3(4, 2, 16),
+                                                           new Vector3(0, -MathF.PI / 4, 0), false, TextureType.Plate));
+                        }
+                        else
+                        {
+                            vertices.AddRange(GenerateCube(new Vector3(x * 16 + 2, 0, y * 16 + 2),
+                                                           new Vector3(12, 2, 12),
+                                                           Vector3.Zero, false, TextureType.Plate));
+                        }
+                    }
+                    else if (level.GetCell(x, y).Type == CellType.Bridge && level.GetCell(x, y).IsOpen)
+                    {
+                        vertices.AddRange(GenerateCube(new Vector3(x * BlockSize, -BlockSize / 4, y * BlockSize),
+                                                       new Vector3(BlockSize, BlockSize / 4, BlockSize),
+                                                       Vector3.Zero, false, TextureType.Plate));
                     }
                 }
             }

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Timofei Zhakov. All rights reserved.
 
 using Microsoft.Xna.Framework;
+using System;
+using System.Linq;
 
 namespace Bloxorz
 {
@@ -19,30 +21,46 @@ namespace Bloxorz
             Width = level.Width;
             Height = level.Height;
             data = new Cell[Width * Height];
+            int currentButton = 0;
+
             for (int i = 0; i < Width * Height; i++)
             {
                 char c = level.Data[i];
-                CellType type = CellType.None;
+
                 if (c == '#')
                 {
-                    type = CellType.Brick;
+                    data[i] = new Cell(CellType.Brick);
                 }
                 else if (c == 'e')
                 {
-                    type = CellType.Exit;
+                    data[i] = new Cell(CellType.Exit);
                 }
+                else if (c == 's')
+                {
+                    data[i] = new Cell(CellType.Brick);
+                    Player = new Player(this, i % Width, i / Width);
+                }
+                else if (c == 'b')
+                {
+                    data[i] = level.Buttons[currentButton];
+                    currentButton++;
+                }
+                else if (c == '@')
+                {
+                    data[i] = new Cell(CellType.Bridge);
+                }
+                else
+                {
+                    data[i] = new Cell(CellType.None);
+                }
+            }
 
-                data[i] = new Cell(type);
+            if (Player == null)
+            {
+                throw new Exception("Spawn point not found.");
             }
 
             EndTimer = -1;
-
-            Player = new Player(this);
-        }
-
-        public Cell GetCell(Point point)
-        {
-            return GetCell(point.X, point.Y);
         }
 
         public Cell GetCell(int x, int y)
@@ -57,9 +75,9 @@ namespace Bloxorz
             }
         }
 
-        public void Restart()
+        public Cell GetCell(Point point)
         {
-            Player = new Player(this);
+            return GetCell(point.X, point.Y);
         }
 
         public void Update()
@@ -85,9 +103,45 @@ namespace Bloxorz
         Win
     }
 
+    public class PlayerCells
+    {
+        public Cell Cell1;
+        public Cell Cell2;
+        public Cell[] Cells;
+
+        public PlayerCells(Cell cell1, Cell cell2 = null)
+        {
+            Cell1 = cell1;
+            Cell2 = cell2;
+
+            if (cell2 == null)
+            {
+                Cells = [cell1];
+            }
+            else
+            {
+                Cells = [cell1, cell2];
+            }
+        }
+
+        public bool Contains(CellType type)
+        {
+            return Cell1?.Type == type || Cell2?.Type == type;
+        }
+
+        public bool ContainsVoid()
+        {
+            return Cells.Any(cell => cell.Type == CellType.None || (cell.Type == CellType.Bridge && !cell.IsOpen));
+        }
+    }
+
     public class Cell
     {
         public CellType Type;
+        public bool IsOpen;
+        public bool StayRequiered;
+        public Point ButtonTarget1;
+        public Point ButtonTarget2;
 
         public Cell(CellType type)
         {
@@ -99,6 +153,8 @@ namespace Bloxorz
     {
         None,
         Brick,
-        Exit
+        Exit,
+        Button,
+        Bridge,
     }
 }

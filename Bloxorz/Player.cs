@@ -16,9 +16,10 @@ namespace Bloxorz
         private readonly Terrain terrain;
         private readonly float speed = 2;
 
-        public Player(Terrain terrain)
+        public Player(Terrain terrain, int x, int y)
         {
             this.terrain = terrain;
+            Position = new Vector3(x * 16, 0, y * 16);
         }
 
         public void Update()
@@ -29,16 +30,25 @@ namespace Bloxorz
 
                 if (animation == -1)
                 {
-                    var cells = GetCells();
+                    PlayerCells cells = GetCells();
 
-                    if (cells[0].Type == CellType.None || (State != PlayerState.Stand && cells[1].Type == CellType.None))
+                    if (cells.ContainsVoid())
                     {
                         terrain.State = GameState.GameOver;
                     }
-                    else if (State == PlayerState.Stand && cells[0].Type == CellType.Exit)
+                    else if (cells.Contains(CellType.Exit) && State == PlayerState.Stand)
                     {
                         terrain.State = GameState.Win;
                         delta = new Vector3(0, -1, 0);
+                    }
+
+                    foreach (Cell cell in cells.Cells)
+                    {
+                        if (cell.Type == CellType.Button && (!cell.StayRequiered || State == PlayerState.Stand))
+                        {
+                            terrain.GetCell(cell.ButtonTarget1).IsOpen = true;
+                            terrain.GetCell(cell.ButtonTarget2).IsOpen = true;
+                        }
                     }
                 }
             }
@@ -96,29 +106,23 @@ namespace Bloxorz
             }
         }
 
-        private Cell[] GetCells()
+        private PlayerCells GetCells()
         {
             Point pos = new Point((int)Position.X, (int)Position.Z);
 
             if (State == PlayerState.Horizontal)
             {
-                return [
-                    terrain.GetCell((pos.X - 8) / 16, pos.Y / 16),
-                    terrain.GetCell((pos.X - 8) / 16 + 1, pos.Y / 16)
-                ];
+                return new PlayerCells(terrain.GetCell((pos.X - 8) / 16, pos.Y / 16),
+                                     terrain.GetCell((pos.X - 8) / 16 + 1, pos.Y / 16));
             }
             else if (State == PlayerState.Vertical)
             {
-                return [
-                    terrain.GetCell(pos.X / 16, (pos.Y - 8) / 16),
-                    terrain.GetCell(pos.X / 16, (pos.Y - 8) / 16 + 1),
-                ];
+                return new PlayerCells(terrain.GetCell(pos.X / 16, (pos.Y - 8) / 16),
+                                     terrain.GetCell(pos.X / 16, (pos.Y - 8) / 16 + 1));
             }
             else
             {
-                return [
-                    terrain.GetCell(pos.X / 16, pos.Y / 16)
-                ];
+                return new PlayerCells(terrain.GetCell(pos.X / 16, pos.Y / 16));
             }
         }
     }

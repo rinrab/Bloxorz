@@ -15,6 +15,12 @@ sampler2D LevelTextureSampler = sampler_state
     Texture = <LevelTexture>;
 };
 
+Texture2D PlateTexture;
+sampler2D PlateTextureSampler = sampler_state
+{
+    Texture = <PlateTexture>;
+};
+
 struct VertexShaderInput
 {
     float4 TexCoord : TEXCOORD0;
@@ -53,10 +59,15 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     {
         color = tex2D(PlayerTextureSampler, input.TexCoord);
     }
-    else
+    else if (input.TexCoord.y < 2)
     {
         float2 texCoord = float2(input.TexCoord.x, input.TexCoord.y - 1);
         color = tex2D(LevelTextureSampler, texCoord);
+    }
+    else
+    {
+        float2 texCoord = float2(input.TexCoord.x, input.TexCoord.y - 2);
+        color = tex2D(PlateTextureSampler, texCoord);
     }
 
     return color * (normalMul * 1 + 0.2);

@@ -7,5 +7,6 @@ namespace Bloxorz
         public int Width;
         public int Height;
         public string Data;
+        public Cell[] Buttons;
     }
 }
