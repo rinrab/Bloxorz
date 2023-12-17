@@ -13,7 +13,6 @@ namespace Bloxorz
 
         private Vector3 delta = Vector3.Zero;
         private int animation = 0;
-        private bool isAlive = true;
         private readonly Terrain terrain;
         private readonly float speed = 2;
 
