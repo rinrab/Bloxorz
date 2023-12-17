@@ -14,7 +14,7 @@ namespace Bloxorz
         private Vector3 delta = Vector3.Zero;
         private int animation = 0;
         private bool isAlive = true;
-        private Level level;
+        private readonly Level level;
 
         public Player(Level level)
         {
