@@ -48,26 +48,8 @@ namespace Bloxorz
                 {
                     Position += delta;
 
-                    if (delta.X != 0)
-                    {
-                        Rotation.Z -= (delta.X > 0) ? speed : -speed;
-                        Rotation.Z %= 32;
-                    }
-
-                    if (delta.Z != 0)
-                    {
-                        Rotation.X += (delta.Z > 0) ? speed : -speed;
-                        Rotation.X %= 32;
-                    }
-
-                    if (State == State.Vertical)
-                    {
-                        Rotation.Z %= 16;
-                    }
-                    if (State == State.Horizontal)
-                    {
-                        Rotation.X %= 16;
-                    }
+                    Rotation.Z = (Rotation.Z - GetSign(delta.X) * speed) % ((State == State.Vertical) ? 16 : 32);
+                    Rotation.X = (Rotation.X + GetSign(delta.Z) * speed) % ((State == State.Horizontal) ? 16 : 32);
 
                     animation++;
                 }
@@ -75,6 +57,22 @@ namespace Bloxorz
                 {
                     animation = -1;
                 }
+            }
+        }
+
+        private int GetSign(float number)
+        {
+            if (number < 0)
+            {
+                return -1;
+            }
+            else if (number > 0)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
             }
         }
     }
