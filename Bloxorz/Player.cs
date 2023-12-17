@@ -78,8 +78,8 @@ namespace Bloxorz
                 {
                     Position += delta * speed;
 
-                    Rotation.Z = (Rotation.Z - GetSign(delta.X) * speed) % ((State == State.Vertical) ? 16 : 32);
-                    Rotation.X = (Rotation.X + GetSign(delta.Z) * speed) % ((State == State.Horizontal) ? 16 : 32);
+                    Rotation.Z = (Rotation.Z - delta.X.Normalize() * speed) % ((State == State.Vertical) ? 16 : 32);
+                    Rotation.X = (Rotation.X + delta.Z.Normalize() * speed) % ((State == State.Horizontal) ? 16 : 32);
 
                     animation++;
                 }
@@ -113,22 +113,6 @@ namespace Bloxorz
                 return [
                     level.GetCell(pos.X / 16, pos.Y / 16)
                 ];
-            }
-        }
-
-        private int GetSign(float number)
-        {
-            if (number < 0)
-            {
-                return -1;
-            }
-            else if (number > 0)
-            {
-                return 1;
-            }
-            else
-            {
-                return 0;
             }
         }
     }
