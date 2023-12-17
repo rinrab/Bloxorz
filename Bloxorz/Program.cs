@@ -1,4 +1,4 @@
-﻿namespace Project3
+﻿namespace Bloxorz
 {
     internal class Program
     {

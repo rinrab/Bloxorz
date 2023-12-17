@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 
-namespace Project3
+namespace Bloxorz
 {
     public static class ObjectGenerator
     {

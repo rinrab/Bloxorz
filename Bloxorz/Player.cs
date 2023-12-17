@@ -2,7 +2,7 @@
 
 using System.Numerics;
 
-namespace Project3
+namespace Bloxorz
 {
     public class Player
     {

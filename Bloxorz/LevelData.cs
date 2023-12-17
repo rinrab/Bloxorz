@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Timofei Zhakov. All rights reserved.
 
-namespace Project3
+namespace Bloxorz
 {
     public static class LevelData
     {
