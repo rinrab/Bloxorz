@@ -46,6 +46,7 @@ namespace Bloxorz
             effect = Content.Load<Effect>("shader");
             effect.Parameters["World"].SetValue(worldMatrix);
             effect.Parameters["Projection"].SetValue(projectionMatrix);
+            effect.Parameters["Light"].SetValue(new Vector3(-2, 3, 1));
 
             graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 

@@ -1,6 +1,7 @@
 ﻿float4x4 World;
 float4x4 View;
 float4x4 Projection;
+float3 Light;
 
 struct VertexShaderInput
 {
@@ -36,16 +37,9 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
-    float4 light = normalize(float4(-1, 3, 1, 0));
-    //float4 light = float4(0, -1, 0, 0);
-
-    float normalMul = dot(input.Normal, light);
+    float normalMul = dot(input.Normal, normalize(float4(Light, 0)));
 
     return input.Color * (normalMul * 2 + 0);
-
-    //return normalize(-input.Normal);
-
-    //return float4(0.5, 0, 0, 0);
 }
 
 technique Ambient
