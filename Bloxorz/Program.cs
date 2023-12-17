@@ -1,4 +1,6 @@
-﻿namespace Bloxorz
+﻿// Copyright (c) Timofei Zhakov. All rights reserved.
+
+namespace Bloxorz
 {
     internal class Program
     {
