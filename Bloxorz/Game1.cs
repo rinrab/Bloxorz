@@ -44,6 +44,8 @@ namespace Bloxorz
             worldMatrix = Matrix.CreateWorld(Vector3.Zero, Vector3.Forward, Vector3.Up);
 
             effect = Content.Load<Effect>("shader");
+            effect.Parameters["World"].SetValue(worldMatrix);
+            effect.Parameters["Projection"].SetValue(projectionMatrix);
 
             graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
@@ -83,12 +85,10 @@ namespace Bloxorz
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            effect.Parameters["Projection"].SetValue(projectionMatrix);
             effect.Parameters["View"].SetValue(
                 Matrix.CreateTranslation(new Vector3(-camPosition.X, camPosition.Y, -camPosition.Z)) *
                 Matrix.CreateRotationY(camRotation.Y) *
                 Matrix.CreateRotationX(camRotation.X));
-            effect.Parameters["World"].SetValue(worldMatrix);
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
