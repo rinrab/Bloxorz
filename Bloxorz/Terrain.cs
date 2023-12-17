@@ -10,7 +10,7 @@ namespace Bloxorz
     {
         public int Width { get; }
         public int Height { get; }
-        public Player Player { get; private set; }
+        public Player Player { get; }
         public int EndTimer { get; set; }
         public GameState State { get; set; }
 
