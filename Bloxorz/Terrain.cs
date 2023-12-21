@@ -49,6 +49,10 @@ namespace Bloxorz
                 {
                     data[i] = new Cell(CellType.Bridge);
                 }
+                else if (c == 'f')
+                {
+                    data[i] = new Cell(CellType.FallingBrick);
+                }
                 else
                 {
                     data[i] = new Cell(CellType.None);
@@ -152,6 +156,7 @@ namespace Bloxorz
     {
         None,
         Brick,
+        FallingBrick,
         Exit,
         Button,
         Bridge,

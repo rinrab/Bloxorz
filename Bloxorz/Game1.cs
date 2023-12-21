@@ -17,7 +17,7 @@ namespace Bloxorz
         private Effect effect;
 
         private Terrain terrain;
-        private int level = 0;
+        private int level = 3;
 
         public Game1()
         {
@@ -42,9 +42,7 @@ namespace Bloxorz
             effect.Parameters["World"].SetValue(worldMatrix);
             effect.Parameters["Projection"].SetValue(projectionMatrix);
             effect.Parameters["Light"].SetValue(new Vector3(-2, 3, 1));
-            effect.Parameters["PlayerTexture"].SetValue(Content.Load<Texture2D>("Player"));
-            effect.Parameters["LevelTexture"].SetValue(Content.Load<Texture2D>("Level"));
-            effect.Parameters["PlateTexture"].SetValue(Content.Load<Texture2D>("Plate"));
+            effect.Parameters["Texture"].SetValue(Content.Load<Texture2D>("Texture"));
 
             graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 

@@ -59,14 +59,29 @@ namespace Bloxorz
             },
             new Level()
             {
+                Width = 14,
+                Height = 9,
+                Data =
+                    "   fffffff    " +
+                    "   fffffff    " +
+                    "....     ...  " +
+                    "...       ..  " +
+                    "...       ..  " +
+                    ".s.  ....fffff" +
+                    "...  ....fffff" +
+                    "     .e.  ff.f" +
+                    "     ...  ffff"
+            },
+            new Level()
+            {
                 Width = 10,
                 Height = 6,
                 Data =
                     ".........." +
-                    ".s........" +
-                    ".........." +
-                    ".........." +
-                    ".........." +
+                    ".s.ffff..." +
+                    "...ffff..." +
+                    "...ffff..." +
+                    "...ffff..." +
                     ".........."
             }
         ];

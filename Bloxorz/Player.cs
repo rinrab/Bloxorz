@@ -15,7 +15,7 @@ namespace Bloxorz
         private Vector3 delta = Vector3.Zero;
         private int animation = 0;
         private readonly Terrain terrain;
-        private readonly float speed = 2;
+        public const float Speed = 2;
 
         public Player(Terrain terrain, int x, int y)
         {
@@ -42,6 +42,12 @@ namespace Bloxorz
                         terrain.State = GameState.Win;
                         delta = new Vector3(0, -1, 0);
                     }
+                    else if (State == PlayerState.Stand && cells.Cell1.Type == CellType.FallingBrick)
+                    {
+                        terrain.State = GameState.GameOver;
+                        cells.Cell1.Animation = 0;
+                        delta = new Vector3(0, -1, 0);
+                    }
 
                     foreach (Cell cell in cells.Cells)
                     {
@@ -58,10 +64,10 @@ namespace Bloxorz
             }
             else
             {
-                Position.Y -= 2 * speed;
-                Position += delta * speed / 2;
-                Rotation.Z -= delta.X.Normalize() * 2 * speed;
-                Rotation.X += delta.Z.Normalize() * 2 * speed;
+                Position.Y -= 2 * Speed;
+                Position += delta * Speed / 2;
+                Rotation.Z -= delta.X.Normalize() * 2 * Speed;
+                Rotation.X += delta.Z.Normalize() * 2 * Speed;
             }
         }
 
@@ -94,12 +100,12 @@ namespace Bloxorz
 
             if (animation != -1)
             {
-                if (animation * speed < 16)
+                if (animation * Speed < 16)
                 {
-                    Position += delta * speed;
+                    Position += delta * Speed;
 
-                    Rotation.Z = (Rotation.Z - delta.X.Normalize() * speed) % ((State == PlayerState.Vertical) ? 16 : 32);
-                    Rotation.X = (Rotation.X + delta.Z.Normalize() * speed) % ((State == PlayerState.Horizontal) ? 16 : 32);
+                    Rotation.Z = (Rotation.Z - delta.X.Normalize() * Speed) % ((State == PlayerState.Vertical) ? 16 : 32);
+                    Rotation.X = (Rotation.X + delta.Z.Normalize() * Speed) % ((State == PlayerState.Horizontal) ? 16 : 32);
 
                     animation++;
                 }

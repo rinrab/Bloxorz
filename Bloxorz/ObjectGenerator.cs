@@ -13,7 +13,8 @@ namespace Bloxorz
         {
             Player,
             Level,
-            Plate
+            FallingBrick,
+            Plate,
         }
 
         public static VertexPositionNormalTexture[] GenerateCube(Vector3 pos, Vector3 size, Vector3 rotation, bool reverseRotation, TextureType textureType)
@@ -30,13 +31,25 @@ namespace Bloxorz
 
             VertexPositionNormalTexture create(Vector3 vecPos, Vector3 normal, Vector2 texCoord)
             {
+                texCoord.X /= 4;
+                texCoord.Y /= 2;
+
                 if (textureType == TextureType.Level)
                 {
-                    texCoord.Y++;
+                    texCoord.X += 0.00f;
+                }
+                else if (textureType == TextureType.FallingBrick)
+                {
+                    texCoord.X += 0.25f;
                 }
                 else if (textureType == TextureType.Plate)
                 {
-                    texCoord.Y += 2;
+                    texCoord.X += 0.50f;
+                }
+                else if (textureType == TextureType.Player)
+                {
+                    texCoord.X *= 2;
+                    texCoord.Y += 0.5f;
                 }
 
                 return new VertexPositionNormalTexture(Vector3.Transform(vecPos, matrix), Vector3.Zero, texCoord);
@@ -112,6 +125,14 @@ namespace Bloxorz
                         vertices.AddRange(GenerateCube(new Vector3(x * 16, -4, y * 16),
                                                        new Vector3(16, 16 / 4, 16),
                                                        Vector3.Zero, false, TextureType.Level));
+                    }
+                    else if (cell.Type == CellType.FallingBrick)
+                    {
+                        float animation = (cell.Animation == -1) ? 0 : -cell.Animation * Player.Speed;
+
+                        vertices.AddRange(GenerateCube(new Vector3(x * 16, animation * 3 - 4, y * 16),
+                                                       new Vector3(16, 16 / 4, 16),
+                                                       new Vector3(animation * 2, 0, animation) / 20, false, TextureType.FallingBrick));
                     }
                     else if (cell.Type == CellType.Button)
                     {
