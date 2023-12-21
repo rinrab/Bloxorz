@@ -82,6 +82,14 @@ namespace Bloxorz
 
         public void Update()
         {
+            for (int i = 0;  i < Height * Width; i++)
+            {
+                if (data[i].Animation != -1)
+                {
+                    data[i].Animation++;
+                }
+            }
+
             Player.Update();
 
             if (State != GameState.Playing && EndTimer == -1)
@@ -132,6 +140,7 @@ namespace Bloxorz
         public bool StayRequiered;
         public Point ButtonTarget1;
         public Point ButtonTarget2;
+        public int Animation = -1;
 
         public Cell(CellType type)
         {

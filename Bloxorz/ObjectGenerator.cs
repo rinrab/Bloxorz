@@ -108,19 +108,20 @@ namespace Bloxorz
             {
                 for (int x = 0; x < level.Width; x++)
                 {
-                    if (level.GetCell(x, y).Type == CellType.Brick)
+                    var cell = level.GetCell(x, y);
+                    if (cell.Type == CellType.Brick)
                     {
                         vertices.AddRange(GenerateCube(new Vector3(x * BlockSize, -BlockSize / 4, y * BlockSize),
                                                        new Vector3(BlockSize, BlockSize / 4, BlockSize),
                                                        Vector3.Zero, false, TextureType.Level));
                     }
-                    else if (level.GetCell(x, y).Type == CellType.Button)
+                    else if (cell.Type == CellType.Button)
                     {
                         vertices.AddRange(GenerateCube(new Vector3(x * BlockSize, -BlockSize / 4, y * BlockSize),
                                                        new Vector3(BlockSize, BlockSize / 4, BlockSize),
                                                        Vector3.Zero, false, TextureType.Level));
 
-                        if (level.GetCell(x, y).StayRequiered)
+                        if (cell.StayRequiered)
                         {
                             vertices.AddRange(GenerateCube(new Vector3(x * 16 + 6, 0, y * 16),
                                                            new Vector3(4, 2, 16),
@@ -137,10 +138,22 @@ namespace Bloxorz
                                                            Vector3.Zero, false, TextureType.Plate));
                         }
                     }
-                    else if (level.GetCell(x, y).Type == CellType.Bridge && level.GetCell(x, y).IsOpen)
+                    else if (cell.Type == CellType.Bridge && cell.IsOpen)
                     {
-                        vertices.AddRange(GenerateCube(new Vector3(x * BlockSize, -BlockSize / 4, y * BlockSize),
-                                                       new Vector3(BlockSize, BlockSize / 4, BlockSize),
+                        float animationPercent = 1;
+                        int animationDuration = 30;
+
+                        if (cell.Animation == animationDuration)
+                        {
+                            cell.Animation = -1;
+                        }
+                        if (cell.Animation != -1)
+                        {
+                            animationPercent = cell.Animation / (float)animationDuration;
+                        }
+
+                        vertices.AddRange(GenerateCube(new Vector3(x * BlockSize + (animationPercent - 1) * BlockSize * 2, -BlockSize / 4 - 0.001f, y * BlockSize),
+                                                       new Vector3(BlockSize, 4 - 0.002f, BlockSize),
                                                        Vector3.Zero, false, TextureType.Plate));
                     }
                 }

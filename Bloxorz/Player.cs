@@ -45,10 +45,13 @@ namespace Bloxorz
 
                     foreach (Cell cell in cells.Cells)
                     {
-                        if (cell.Type == CellType.Button && (!cell.StayRequiered || State == PlayerState.Stand))
+                        if (cell.Type == CellType.Button && (!cell.StayRequiered || State == PlayerState.Stand) &&
+                            (!terrain.GetCell(cell.ButtonTarget1).IsOpen || !terrain.GetCell(cell.ButtonTarget2).IsOpen))
                         {
                             terrain.GetCell(cell.ButtonTarget1).IsOpen = true;
+                            terrain.GetCell(cell.ButtonTarget1).Animation = 0;
                             terrain.GetCell(cell.ButtonTarget2).IsOpen = true;
+                            terrain.GetCell(cell.ButtonTarget2).Animation = 0;
                         }
                     }
                 }
