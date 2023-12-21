@@ -9,8 +9,6 @@ namespace Bloxorz
 {
     public static class ObjectGenerator
     {
-        public const float BlockSize = 16f;
-
         public enum TextureType
         {
             Player,
@@ -111,14 +109,14 @@ namespace Bloxorz
                     var cell = level.GetCell(x, y);
                     if (cell.Type == CellType.Brick)
                     {
-                        vertices.AddRange(GenerateCube(new Vector3(x * BlockSize, -BlockSize / 4, y * BlockSize),
-                                                       new Vector3(BlockSize, BlockSize / 4, BlockSize),
+                        vertices.AddRange(GenerateCube(new Vector3(x * 16, -4, y * 16),
+                                                       new Vector3(16, 16 / 4, 16),
                                                        Vector3.Zero, false, TextureType.Level));
                     }
                     else if (cell.Type == CellType.Button)
                     {
-                        vertices.AddRange(GenerateCube(new Vector3(x * BlockSize, -BlockSize / 4, y * BlockSize),
-                                                       new Vector3(BlockSize, BlockSize / 4, BlockSize),
+                        vertices.AddRange(GenerateCube(new Vector3(x * 16, -4, y * 16),
+                                                       new Vector3(16, 16 / 4, 16),
                                                        Vector3.Zero, false, TextureType.Level));
 
                         if (cell.StayRequiered)
@@ -152,8 +150,8 @@ namespace Bloxorz
                             animationPercent = cell.Animation / (float)animationDuration;
                         }
 
-                        vertices.AddRange(GenerateCube(new Vector3(x * BlockSize + (animationPercent - 1) * BlockSize * 2, -BlockSize / 4 - 0.001f, y * BlockSize),
-                                                       new Vector3(BlockSize, 4 - 0.002f, BlockSize),
+                        vertices.AddRange(GenerateCube(new Vector3(x * 16 + (animationPercent - 1) * 32, -4 - 0.001f, y * 16),
+                                                       new Vector3(16, 4 - 0.002f, 16),
                                                        Vector3.Zero, false, TextureType.Plate));
                     }
                 }
@@ -171,7 +169,7 @@ namespace Bloxorz
         public static VertexBuffer GeneratePlayer(GraphicsDevice graphicsDevice, Player player)
         {
             var vertices = GenerateCube(player.Position,
-                                        new Vector3(1, 2, 1) * BlockSize,
+                                        new Vector3(1, 2, 1) * 16,
                                         player.Rotation / 16 * MathF.PI / 2,
                                         player.State == PlayerState.Vertical,
                                         TextureType.Player);

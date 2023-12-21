@@ -16,8 +16,6 @@ namespace Bloxorz
         private Matrix worldMatrix;
         private Effect effect;
 
-        const float BlockSize = 16;
-
         private Terrain terrain;
         private int level;
 
@@ -36,7 +34,7 @@ namespace Bloxorz
 
         protected override void Initialize()
         {
-            projectionMatrix = Matrix.CreateOrthographic(BlockSize * 1 * 16, BlockSize * 1 * 9, 1, 4096);
+            projectionMatrix = Matrix.CreateOrthographic(16 * 1 * 16, 16 * 1 * 9, 1, 4096);
 
             worldMatrix = Matrix.CreateWorld(Vector3.Zero, Vector3.Forward, Vector3.Up);
 
