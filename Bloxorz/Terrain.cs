@@ -27,7 +27,7 @@ namespace Bloxorz
             {
                 char c = level.Data[i];
 
-                if (c == '#')
+                if (c == '.')
                 {
                     data[i] = new Cell(CellType.Brick);
                 }
