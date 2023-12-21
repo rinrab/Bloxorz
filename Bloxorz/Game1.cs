@@ -17,7 +17,7 @@ namespace Bloxorz
         private Effect effect;
 
         private Terrain terrain;
-        private int level;
+        private int level = 0;
 
         public Game1()
         {
